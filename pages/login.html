@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | Local Event Finder</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="../index.html" class="logo">Local<span>ly.</span></a>
+        <nav>
+            <a href="../index.html">Explore</a>
+            <a href="favorites.html">Favorites</a>
+            <a href="rsvps.html">My RSVPs</a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-card">
+            <p class="eyebrow">WELCOME BACK</p>
+            <h1>Log in to Locally.</h1>
+            <p class="auth-description">
+                Sign in to save events, RSVP, and discover more.
+            </p>
+
+            <form id="loginForm">
+                <label for="email">Email address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+                <button type="submit" class="auth-submit">
+                    Log In
+                </button>
+
+                <p id="loginMessage" class="form-message" role="status"></p>
+            </form>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <a href="register.html">Create one</a>
+            </p>
+        </div>
+    </main>
+</body>
+</html>

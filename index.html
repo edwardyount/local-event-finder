@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Event Finder</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="index.html" class="logo">Local<span>ly.</span></a>
+
+        <nav>
+            <a href="index.html">Explore</a>
+            <a href="pages/favorites.html">Favorites</a>
+            <a href="pages/rsvps.html">My RSVPs</a>
+            <a href="pages/login.html" class="login-btn">Log In</a>
+        </nav>
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <p class="eyebrow">DISCOVER YOUR COMMUNITY</p>
+
+            <h1>Find something<br>worth <span>going out for.</span></h1>
+
+            <p class="hero-description">
+                Discover local events, meet new people,
+                and make the most of your community.
+            </p>
+
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search events, places, or activities..."
+                >
+                <button id="searchButton">Search</button>
+            </div>
+        </section>
+
+        <section class="categories">
+            <h2>Explore by category</h2>
+
+            <div class="category-list">
+                <button class="category-btn" data-category="Arts and Culture">Arts & Culture</button>
+                <button class="category-btn" data-category="Sports and Fitness">Sports & Fitness</button>
+                <button class="category-btn" data-category="Education">Education</button>
+                <button class="category-btn" data-category="Community and Volunteering">Community</button>
+                <button class="category-btn" data-category="Food and Drink">Food & Drink</button>
+                <button class="category-btn" data-category="Social and Recreation">Social & Recreation</button>
+            </div>
+        </section>
+
+        <section class="events-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">WHAT'S HAPPENING</p>
+                    <h2>Upcoming events</h2>
+                </div>
+                <span id="eventCount"></span>
+            </div>
+
+            <div id="eventGrid" class="event-grid"></div>
+
+            <p id="emptyMessage" class="empty-message" hidden>
+                No events found. Try another search or category.
+            </p>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Local Event Finder | Discover more. Experience more.</p>
+    </footer>
+
+    <script src="js/events.js"></script>
+    <script src="js/filters.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>
