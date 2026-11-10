@@ -1,0 +1,78 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Local Event Finder</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="../index.html" class="logo">Local<span>ly.</span></a>
+        <nav>
+            <a href="../index.html">Explore</a>
+            <a href="favorites.html">Favorites</a>
+            <a href="rsvps.html">My RSVPs</a>
+            <a href="login.html" class="login-btn">Log In</a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <div class="auth-card">
+            <p class="eyebrow">JOIN YOUR COMMUNITY</p>
+            <h1>Create an account.</h1>
+            <p class="auth-description">
+                Sign up to discover events and connect with your community.
+            </p>
+
+            <form id="registerForm">
+                <label for="displayName">Display name</label>
+                <input
+                    type="text"
+                    id="displayName"
+                    placeholder="Your name"
+                    required
+                >
+
+                <label for="email">Email address</label>
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    required
+                >
+
+                <label for="password">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="At least 8 characters"
+                    minlength="8"
+                    required
+                >
+
+                <label for="confirmPassword">Confirm password</label>
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Enter your password again"
+                    minlength="8"
+                    required
+                >
+
+                <button type="submit" class="auth-submit">
+                    Create Account
+                </button>
+
+                <p id="registerMessage" class="form-message" role="status"></p>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account?
+                <a href="login.html">Log in</a>
+            </p>
+        </div>
+    </main>
+</body>
+</html>
