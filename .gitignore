@@ -1,0 +1,28 @@
+# Python virtual environment
+.venv/
+venv/
+env/
+
+# Python cache / compiled files
+__pycache__/
+*.py[cod]
+
+# Local database (recreate with: python seed.py)
+*.db
+*.sqlite
+*.sqlite3
+
+# Secrets and local config
+.env
+.env.*
+
+# Editor / OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and test output
+*.log
+.pytest_cache/
+.coverage
