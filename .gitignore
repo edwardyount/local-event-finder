@@ -26,3 +26,6 @@ Thumbs.db
 *.log
 .pytest_cache/
 .coverage
+
+# Session signing key (created on first run, never commit)
+backend/.secret_key

@@ -13,12 +13,12 @@ from werkzeug.security import generate_password_hash
 from db.connection import DB_PATH, get_connection, init_db
 
 CATEGORIES = [
-    ("Arts and Culture",           "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=800"),
-    ("Sports and Fitness",         "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800"),
-    ("Education",                  "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800"),
-    ("Community and Volunteering", "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800"),
-    ("Food and Drink",             "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800"),
-    ("Social and Recreation",      "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"),
+    ("Arts and Culture",           "/images/categories/arts.svg"),
+    ("Sports and Fitness",         "/images/categories/sports.svg"),
+    ("Education",                  "/images/categories/education.svg"),
+    ("Community and Volunteering", "/images/categories/community.svg"),
+    ("Food and Drink",             "/images/categories/food.svg"),
+    ("Social and Recreation",      "/images/categories/social.svg"),
 ]
 #min 8 char
 TEST_PASSWORD = "password123" 

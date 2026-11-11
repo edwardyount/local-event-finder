@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My RSVPs | Local Event Finder</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <a href="../index.html" class="logo">Local<span>ly.</span></a>
+        <nav>
+            <a href="../index.html">Explore</a>
+            <a href="favorites.html">Favorites</a>
+            <a href="rsvps.html">My RSVPs</a>
+            <a href="create-event.html">Create Event</a>
+            <a href="login.html" class="login-btn">Log In</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="events-section favorites-section">
+            <div class="section-heading">
+                <div>
+                    <p class="eyebrow">YOUR PLANS</p>
+                    <h2>My RSVPs</h2>
+                </div>
+                <span id="rsvpCount"></span>
+            </div>
+
+            <p class="form-hint">All times are shown in US Eastern Time (ET).</p>
+
+            <div id="rsvpTableWrap" class="table-wrap" hidden>
+                <table class="rsvp-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Event</th>
+                            <th scope="col">Date &amp; time</th>
+                            <th scope="col">Location</th>
+                            <th scope="col">Event status</th>
+                            <th scope="col">Your status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rsvpRows"></tbody>
+                </table>
+            </div>
+
+            <p id="rsvpEmpty" class="empty-message" hidden>
+                No RSVPs yet. Open an event and choose "RSVP to Event".
+            </p>
+
+            <p id="rsvpError" class="empty-message" role="alert" hidden>
+                Could not load your RSVPs.
+                <button type="button" id="rsvpRetry">Retry</button>
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>Local Event Finder | Discover more. Experience more.</p>
+    </footer>
+
+    <script src="../js/api.js"></script>
+    <script src="../js/nav.js"></script>
+    <script src="../js/format.js"></script>
+    <script src="../js/rsvps-page.js"></script>
+</body>
+</html>

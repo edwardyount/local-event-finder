@@ -6,6 +6,8 @@ from db import events as events_db
 from db.connection import connection
 from services.errors import ServiceError
 
+MAX_SEARCH_LENGTH = 200
+MAX_CATEGORIES = 20
 EASTERN = ZoneInfo("America/New_York")   # the single event time zone (Q04)
 
 
@@ -39,6 +41,10 @@ def event_to_dict(row, now=None):
         "activeRSVPCount": row["active_rsvp_count"],
         "status": event_status(row, now),
         "isFavorite": bool(row["is_favorite"]),
+        "categoryId": row["category_id"],
+        "isOwner": bool(row["is_owner"]),          # is the signed-in user the creator?
+        "hasRSVP": bool(row["has_rsvp"]),          # the signed-in user's own RSVP (Q09)
+        "seatsLeft": max(row["capacity"] - row["active_rsvp_count"], 0),
     }
 
 
@@ -60,7 +66,11 @@ def browse(q=None, categories=None, start_date=None, end_date=None, user_id=None
                            {"endDate": "End date must not be before the start date."})
 
     q = (q or "").strip().lower()
-    categories = [c for c in (categories or []) if c.strip()]
+    if len(q) > MAX_SEARCH_LENGTH:
+        raise ServiceError(f"Search text must be {MAX_SEARCH_LENGTH} characters or fewer.", 400,
+                           {"q": "Search text is too long."})
+    # No duplicates, and never more than a handful (there are only 6 real categories)
+    categories = list(dict.fromkeys(c for c in (categories or []) if c.strip()))[:MAX_CATEGORIES]
 
     now = now_eastern()
     with connection() as conn:

@@ -65,7 +65,7 @@ function createEventCard(event) {
     image.className = "event-image";
 
     const img = document.createElement("img");
-    img.src = getCategoryImage(event.category);
+    img.src = event.categoryImage;
     img.alt = `${event.category} event`;
     img.loading = "lazy";
 

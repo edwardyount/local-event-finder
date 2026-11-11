@@ -1,5 +1,5 @@
 """Data layer: SQL for the favorites table."""
-from db.events import EVENT_SELECT
+from db.events import EVENT_SELECT, user_params
 
 
 def add(conn, user_id, event_id):
@@ -21,4 +21,4 @@ def list_for_user(conn, user_id):
         EVENT_SELECT + """
           JOIN favorites fav ON fav.event_id = e.event_id AND fav.user_id = ?
          ORDER BY e.date, e.start_time, e.event_id""",
-        (user_id, user_id)).fetchall()      # first ? = is_favorite column, second = the join
+        user_params(user_id) + [user_id]).fetchall()   # user flags first, then the join

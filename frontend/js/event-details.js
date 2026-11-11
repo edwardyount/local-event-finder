@@ -44,7 +44,7 @@ function addInfoRow(parent, label, value) {
 }
 
 
-function renderEvent(event) {
+function renderEvent(event, notice = "", noticeIsError = false) {
     detailsContainer.replaceChildren();
 
     const image = document.createElement("img");
@@ -74,16 +74,62 @@ function renderEvent(event) {
     addInfoRow(info, "Created by:", event.creator);
     addInfoRow(info, "Capacity:", String(event.capacity));
     addInfoRow(info, "Active RSVPs:", String(event.activeRSVPCount));
+    addInfoRow(info, "Seats left:", String(event.seatsLeft));
     detailsContainer.appendChild(info);
 
-    // Add / remove favorite (needs a signed-in user)
+    const actions = document.createElement("div");
+    actions.className = "details-actions";
+
+    const message = document.createElement("p");
+    message.className = "form-message";
+    message.setAttribute("role", "status");
+    message.textContent = notice;
+    message.classList.toggle("success", Boolean(notice) && !noticeIsError);
+
+    // ----- RSVP -----
+    const rsvpButton = document.createElement("button");
+    rsvpButton.type = "button";
+    rsvpButton.className = "rsvp-btn";
+
+    if (event.status === "started") {
+        rsvpButton.textContent = "Event started";
+        rsvpButton.disabled = true;
+    } else if (event.status === "cancelled") {
+        rsvpButton.textContent = "Event cancelled";
+        rsvpButton.disabled = true;
+    } else if (event.hasRSVP) {
+        rsvpButton.textContent = "✓ You're going";
+        rsvpButton.classList.add("going");
+        rsvpButton.disabled = true;
+    } else if (event.seatsLeft === 0) {
+        rsvpButton.textContent = "Event full";
+        rsvpButton.disabled = true;
+    } else {
+        rsvpButton.textContent = "RSVP to Event";
+    }
+
+    rsvpButton.addEventListener("click", async () => {
+        rsvpButton.disabled = true;
+        const outcome = await rsvpToEvent(event.id);
+
+        if (outcome.result === "login") {
+            window.location.href = "/pages/login.html";
+        } else if (outcome.result === "ok") {
+            loadEvent("You're in! Your place is reserved.");
+        } else if (outcome.result === "refused") {
+            loadEvent(outcome.message, true);       // reload so the button shows Full / Started
+        } else {
+            rsvpButton.disabled = false;
+            message.classList.remove("success");
+            message.textContent = "Could not RSVP. Please try again.";
+        }
+    });
+    actions.appendChild(rsvpButton);
+
+    // ----- Favorite -----
     const favoriteButton = document.createElement("button");
     favoriteButton.type = "button";
     favoriteButton.className = "favorite-toggle";
-
-    const favoriteMessage = document.createElement("p");
-    favoriteMessage.className = "form-message";
-    favoriteMessage.setAttribute("role", "status");
 
     function paintFavorite() {
         favoriteButton.textContent = event.isFavorite ? "♥ Remove from Favorites" : "♡ Add to Favorites";
@@ -97,16 +143,28 @@ function renderEvent(event) {
             window.location.href = "/pages/login.html";
         } else if (result === "ok") {
             event.isFavorite = !event.isFavorite;
-            favoriteMessage.textContent = "";
+            message.textContent = "";
             paintFavorite();
         } else {
-            favoriteMessage.textContent = "Could not update favorites. Please try again.";
+            message.classList.remove("success");
+            message.textContent = "Could not update favorites. Please try again.";
         }
     });
 
     paintFavorite();
-    detailsContainer.appendChild(favoriteButton);
-    detailsContainer.appendChild(favoriteMessage);
+    actions.appendChild(favoriteButton);
+
+    // ----- Edit (only the creator, only before the event starts) -----
+    if (event.isOwner && event.status === "upcoming") {
+        const editLink = document.createElement("a");
+        editLink.className = "details-btn";
+        editLink.href = `edit-event.html?id=${encodeURIComponent(event.id)}`;
+        editLink.textContent = "Edit Event";
+        actions.appendChild(editLink);
+    }
+
+    detailsContainer.appendChild(actions);
+    detailsContainer.appendChild(message);
 }
 
 
@@ -117,19 +175,19 @@ function showRetry() {
     const retry = document.createElement("button");
     retry.type = "button";
     retry.textContent = "Retry";
-    retry.addEventListener("click", loadEvent);
+    retry.addEventListener("click", () => loadEvent());
     detailsContainer.lastChild.appendChild(retry);
 }
 
 
-async function loadEvent() {
-    detailsContainer.textContent = "Loading...";
+async function loadEvent(notice = "", noticeIsError = false) {
+    if (!notice) detailsContainer.textContent = "Loading...";
 
     try {
         const { ok, status, data } = await apiFetch(`/api/events/${encodeURIComponent(eventId)}`);
 
         if (ok) {
-            renderEvent(data.event);
+            renderEvent(data.event, notice, noticeIsError);
         } else if (status === 404) {
             detailsContainer.textContent = "Event not found.";
         } else {

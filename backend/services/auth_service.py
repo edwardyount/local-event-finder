@@ -1,6 +1,5 @@
 """Business layer: registration and login rules (FR-01, FR-02)."""
 import re
-import sqlite3
 
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -11,6 +10,8 @@ from services.errors import ServiceError
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 MIN_PASSWORD = 8
 MAX_PASSWORD = 128
+MAX_NAME = 100
+MAX_EMAIL = 254
 GENERIC_LOGIN_ERROR = "Invalid email or password."   # same for unknown email and wrong password
 
 
@@ -30,9 +31,11 @@ def register(name, email, password):
     errors = {}
     if not name:
         errors["displayName"] = "Display name is required."
+    elif len(name) > MAX_NAME:
+        errors["displayName"] = f"Display name must be at most {MAX_NAME} characters."
     if not email:
         errors["email"] = "Email address is required."
-    elif not EMAIL_RE.match(email):
+    elif len(email) > MAX_EMAIL or not EMAIL_RE.match(email):
         errors["email"] = "Enter a valid email address."
     if not password:
         errors["password"] = "Password is required."
@@ -49,7 +52,7 @@ def register(name, email, password):
                                {"email": "Email address already registered"})
         try:
             user_id = users.create(conn, name, email, generate_password_hash(password))
-        except sqlite3.IntegrityError:   # two requests registered the same email at once
+        except users.DuplicateEmail:   # two requests registered the same email at once
             raise ServiceError("Email address already registered", 409,
                                {"email": "Email address already registered"})
     return {"id": user_id, "name": name}

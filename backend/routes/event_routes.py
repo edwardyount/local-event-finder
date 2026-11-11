@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request, session
 
-from services import event_service
+from routes.decorators import login_required
+from services import event_manage_service, event_service
 
 events_bp = Blueprint("events", __name__)
 
@@ -20,6 +21,22 @@ def browse_events():
 @events_bp.get("/api/events/<int:event_id>")
 def event_details(event_id):
     return jsonify(event=event_service.get_event(event_id, session.get("user_id")))
+
+
+@events_bp.post("/api/events")
+@login_required
+def create_event():
+    data = request.get_json(silent=True) or {}
+    event = event_manage_service.create_event(session["user_id"], data)
+    return jsonify(event=event), 201
+
+
+@events_bp.put("/api/events/<int:event_id>")
+@login_required
+def edit_event(event_id):
+    data = request.get_json(silent=True) or {}
+    event = event_manage_service.update_event(session["user_id"], event_id, data)
+    return jsonify(event=event)
 
 
 @events_bp.get("/api/categories")

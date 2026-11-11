@@ -37,3 +37,20 @@ def connection():
         yield conn
     finally:
         conn.close()
+
+
+@contextmanager
+def transaction():
+    """BEGIN IMMEDIATE takes the write lock up front, so two requests can never
+    both pass a "is there room?" check before either one writes."""
+    conn = get_connection()
+    try:
+        conn.execute("BEGIN IMMEDIATE")
+        yield conn
+        conn.execute("COMMIT")
+    except BaseException:
+        if conn.in_transaction:
+            conn.execute("ROLLBACK")      # a failed operation leaves no partial record (NFR-07)
+        raise
+    finally:
+        conn.close()
