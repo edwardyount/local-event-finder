@@ -5,6 +5,7 @@ from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 
 from db.connection import DB_PATH, init_db
 from routes.auth_routes import auth_bp
+from routes.event_routes import events_bp
 from services.errors import ServiceError
 
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
@@ -23,6 +24,7 @@ def create_app():
         init_db()
 
     app.register_blueprint(auth_bp)
+    app.register_blueprint(events_bp)
 
     @app.get("/")
     def home():

@@ -158,38 +158,92 @@ function toggleFavorite(eventId) {
 }
 
 
-// Display events on the homepage
+// Events currently shown (the server does the searching and filtering)
+let currentEvents = [];
+let requestCounter = 0;
+
+
+// Draw the events we already have (no network call)
 function renderEvents() {
 
     const eventGrid = document.getElementById("eventGrid");
     const eventCount = document.getElementById("eventCount");
     const emptyMessage = document.getElementById("emptyMessage");
+    const errorMessage = document.getElementById("errorMessage");
 
     if (!eventGrid) return;
 
-    const searchInput = document.getElementById("searchInput");
-
-    const searchTerm = searchInput ? searchInput.value : "";
-
-    // Show upcoming events only
-    const upcomingEvents = events.filter(isUpcoming);
-
-    // Apply search and category filters
-    const filteredEvents = getFilteredEvents(
-        upcomingEvents,
-        searchTerm
-    );
-
     eventGrid.replaceChildren();
 
-    filteredEvents.forEach(event => {
+    currentEvents.forEach(event => {
         eventGrid.appendChild(createEventCard(event));
     });
 
-    eventCount.textContent =
-        `${filteredEvents.length} events found`;
+    const failed = !errorMessage.hidden;
 
-    emptyMessage.hidden = filteredEvents.length !== 0;
+    eventCount.textContent = failed ? "" : `${currentEvents.length} events found`;
+    emptyMessage.hidden = failed || currentEvents.length !== 0;
+}
+
+
+// Build /api/events query string from the search box, categories and dates
+function buildQuery() {
+    const params = new URLSearchParams();
+
+    const term = document.getElementById("searchInput").value.trim();
+    if (term) params.set("q", term);
+
+    selectedCategories.forEach(category => params.append("categories", category));
+
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    if (startDate) params.set("startDate", startDate);
+    if (endDate) params.set("endDate", endDate);
+
+    return params.toString();
+}
+
+
+// Ask the server for events, then draw them
+async function loadEvents() {
+
+    const myRequest = ++requestCounter;
+    const errorMessage = document.getElementById("errorMessage");
+    const filterMessage = document.getElementById("filterMessage");
+
+    filterMessage.textContent = "";
+
+    try {
+        const { ok, status, data } = await apiFetch("/api/events?" + buildQuery());
+
+        if (myRequest !== requestCounter) return;   // a newer search already started
+
+        if (status === 400 && data && data.error) {
+            // Invalid dates: show the message and keep the last valid results
+            filterMessage.textContent = data.error;
+            return;
+        }
+        if (!ok) throw new Error("Bad response");
+
+        errorMessage.hidden = true;
+        currentEvents = data.events;
+        renderEvents();
+
+    } catch (error) {
+        if (myRequest !== requestCounter) return;
+        // Retry message, never a false "no events found"
+        errorMessage.hidden = false;
+        renderEvents();
+    }
+}
+
+
+function debounce(fn, delay) {
+    let timer;
+    return () => {
+        clearTimeout(timer);
+        timer = setTimeout(fn, delay);
+    };
 }
 
 
@@ -199,20 +253,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput");
     const searchButton = document.getElementById("searchButton");
 
-    // Search as the user types
-    searchInput.addEventListener("input", renderEvents);
+    // Search as the user types (waits 250 ms after the last key)
+    searchInput.addEventListener("input", debounce(loadEvents, 250));
 
     // Search button
-    searchButton.addEventListener("click", renderEvents);
+    searchButton.addEventListener("click", loadEvents);
+
+    // Date range
+    document.getElementById("startDate").addEventListener("change", loadEvents);
+    document.getElementById("endDate").addEventListener("change", loadEvents);
+
+    // Retry after a failed load
+    document.getElementById("retryButton").addEventListener("click", loadEvents);
 
     // Category selection
     document.querySelectorAll(".category-btn").forEach(button => {
 
         button.addEventListener("click", () => {
 
-            const category = button.dataset.category;
-
-            toggleCategory(category);
+            toggleCategory(button.dataset.category);
 
             button.classList.toggle("active");
 
@@ -221,12 +280,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.classList.contains("active")
             );
 
-            renderEvents();
+            loadEvents();
         });
 
     });
 
     // Initial event display
-    renderEvents();
+    loadEvents();
 
 });

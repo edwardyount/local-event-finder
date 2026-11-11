@@ -454,3 +454,20 @@ footer {
     color: #d97762;
     font-weight: 600;
 }
+
+/* Date filters (home page) */
+.date-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.date-filters input {
+    padding: 8px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font: inherit;
+}
