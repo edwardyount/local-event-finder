@@ -1,11 +1,12 @@
 import os
 
-from flask import Flask, jsonify, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory
 from flask_wtf.csrf import CSRFError, CSRFProtect, generate_csrf
 
 from db.connection import DB_PATH, init_db
 from routes.auth_routes import auth_bp
 from routes.event_routes import events_bp
+from routes.favorite_routes import favorites_bp
 from services.errors import ServiceError
 
 FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
@@ -25,6 +26,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(events_bp)
+    app.register_blueprint(favorites_bp)
 
     @app.get("/")
     def home():
@@ -42,6 +44,18 @@ def create_app():
     @app.errorhandler(CSRFError)
     def csrf_error(e):
         return jsonify(error="Invalid or missing CSRF token. Refresh the page and try again."), 400
+
+    @app.errorhandler(404)
+    def not_found(e):
+        if request.path.startswith("/api/"):
+            return jsonify(error="Not found."), 404
+        return e                                       # normal 404 for pages
+
+    @app.errorhandler(405)
+    def method_not_allowed(e):
+        if request.path.startswith("/api/"):
+            return jsonify(error="Method not allowed."), 405
+        return e
 
     @app.errorhandler(500)
     def server_error(e):

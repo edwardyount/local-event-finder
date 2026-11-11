@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, session
 
 from services import event_service
 
@@ -12,8 +12,14 @@ def browse_events():
         q=request.args.get("q"),
         categories=request.args.getlist("categories"),
         start_date=request.args.get("startDate"),
-        end_date=request.args.get("endDate"))
+        end_date=request.args.get("endDate"),
+        user_id=session.get("user_id"))
     return jsonify(events=events, count=len(events))
+
+
+@events_bp.get("/api/events/<int:event_id>")
+def event_details(event_id):
+    return jsonify(event=event_service.get_event(event_id, session.get("user_id")))
 
 
 @events_bp.get("/api/categories")

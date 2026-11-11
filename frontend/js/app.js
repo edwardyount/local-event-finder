@@ -4,16 +4,6 @@
 // Main Application Logic
 // ======================================
 
-// Save favorite event IDs in the browser
-function getFavorites() {
-    return JSON.parse(localStorage.getItem("favoriteEvents") || "[]");
-}
-
-function saveFavorites(favorites) {
-    localStorage.setItem("favoriteEvents", JSON.stringify(favorites));
-}
-
-
 // Determine whether an event is upcoming using Eastern Time
 function isUpcoming(event) {
     const parts = new Intl.DateTimeFormat("en-CA", {
@@ -68,8 +58,8 @@ function createEventCard(event) {
     const card = document.createElement("article");
     card.className = "event-card";
 
-    const favorites = getFavorites();
-    const isFavorite = favorites.includes(event.id);
+    // Favorites now live on the server (the API sends isFavorite)
+    const isFavorite = Boolean(event.isFavorite);
 
     const image = document.createElement("div");
     image.className = "event-image";
@@ -121,9 +111,19 @@ function createEventCard(event) {
         isFavorite ? "Remove from favorites" : "Add to favorites"
     );
 
-    favoriteButton.addEventListener("click", () => {
-        toggleFavorite(event.id);
-        renderEvents();
+    favoriteButton.addEventListener("click", async () => {
+        const result = await setFavorite(event.id, !event.isFavorite);
+
+        if (result === "login") {
+            window.location.href = "/pages/login.html";   // must be signed in
+        } else if (result === "ok") {
+            event.isFavorite = !event.isFavorite;
+            document.getElementById("filterMessage").textContent = "";
+            renderEvents();
+        } else {
+            document.getElementById("filterMessage").textContent =
+                "Could not update favorites. Please try again.";
+        }
     });
 
     actions.appendChild(detailsLink);
@@ -140,21 +140,6 @@ function createEventCard(event) {
     card.appendChild(content);
 
     return card;
-}
-
-
-// Add or remove an event from favorites
-function toggleFavorite(eventId) {
-
-    let favorites = getFavorites();
-
-    if (favorites.includes(eventId)) {
-        favorites = favorites.filter(id => id !== eventId);
-    } else {
-        favorites.push(eventId);
-    }
-
-    saveFavorites(favorites);
 }
 
 

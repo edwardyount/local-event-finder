@@ -6,7 +6,9 @@ EVENT_SELECT = """
            c.category_name, c.category_image,
            u.name AS creator_name,
            (SELECT COUNT(*) FROM rsvps r
-             WHERE r.event_id = e.event_id AND r.status = 'active') AS active_rsvp_count
+             WHERE r.event_id = e.event_id AND r.status = 'active') AS active_rsvp_count,
+           EXISTS (SELECT 1 FROM favorites f
+                    WHERE f.event_id = e.event_id AND f.user_id = ?) AS is_favorite
       FROM events e
       JOIN categories c ON c.category_id = e.category_id
       JOIN users u      ON u.user_id = e.creator_id
@@ -14,13 +16,13 @@ EVENT_SELECT = """
 
 
 def search_upcoming(conn, now_date, now_time, q=None, categories=None,
-                    start_date=None, end_date=None):
+                    start_date=None, end_date=None, user_id=None):
     # Upcoming = not cancelled and start is later than "now" (US Eastern).
     sql = EVENT_SELECT + """
      WHERE e.event_status != 'cancelled'
        AND (e.date > ? OR (e.date = ? AND e.start_time > ?))
     """
-    params = [now_date, now_date, now_time]
+    params = [user_id, now_date, now_date, now_time]   # user_id feeds is_favorite (None = signed out)
 
     if q:  # literal, case-insensitive substring in title, description or location
         sql += """ AND (instr(lower(e.title), ?) > 0
@@ -39,6 +41,10 @@ def search_upcoming(conn, now_date, now_time, q=None, categories=None,
 
     sql += " ORDER BY e.date, e.start_time, e.event_id"
     return conn.execute(sql, params).fetchall()
+
+
+def get_by_id(conn, event_id, user_id=None):
+    return conn.execute(EVENT_SELECT + " WHERE e.event_id = ?", (user_id, event_id)).fetchone()
 
 
 def list_categories(conn):

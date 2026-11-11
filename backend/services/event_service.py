@@ -13,8 +13,17 @@ def now_eastern():
     return datetime.now(EASTERN)
 
 
-def event_to_dict(row):
-    """Shape the frontend already expects (see js/events.js)."""
+def event_status(row, now):
+    """cancelled / started / upcoming, judged on the Eastern clock."""
+    if row["event_status"] == "cancelled":
+        return "cancelled"
+    start = f'{row["date"]} {row["start_time"]}'
+    return "upcoming" if start > now.strftime("%Y-%m-%d %H:%M") else "started"
+
+
+def event_to_dict(row, now=None):
+    """Shape the frontend already expects (see js/events.js). Never includes the creator's email."""
+    now = now or now_eastern()
     return {
         "id": row["event_id"],
         "title": row["title"],
@@ -28,7 +37,8 @@ def event_to_dict(row):
         "creator": row["creator_name"],
         "capacity": row["capacity"],
         "activeRSVPCount": row["active_rsvp_count"],
-        "status": row["event_status"],
+        "status": event_status(row, now),
+        "isFavorite": bool(row["is_favorite"]),
     }
 
 
@@ -42,7 +52,7 @@ def _parse_date(value, field):
         raise ServiceError("Enter a valid date.", 400, {field: "Enter a valid date."})
 
 
-def browse(q=None, categories=None, start_date=None, end_date=None):
+def browse(q=None, categories=None, start_date=None, end_date=None, user_id=None):
     start = _parse_date(start_date, "startDate")
     end = _parse_date(end_date, "endDate")
     if start and end and end < start:
@@ -56,8 +66,16 @@ def browse(q=None, categories=None, start_date=None, end_date=None):
     with connection() as conn:
         rows = events_db.search_upcoming(
             conn, now.strftime("%Y-%m-%d"), now.strftime("%H:%M"),
-            q=q, categories=categories, start_date=start, end_date=end)
-    return [event_to_dict(r) for r in rows]
+            q=q, categories=categories, start_date=start, end_date=end, user_id=user_id)
+    return [event_to_dict(r, now) for r in rows]
+
+
+def get_event(event_id, user_id=None):
+    with connection() as conn:
+        row = events_db.get_by_id(conn, event_id, user_id)
+    if not row:
+        raise ServiceError("Event not found.", 404)
+    return event_to_dict(row)
 
 
 def categories():

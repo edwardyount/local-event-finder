@@ -471,3 +471,45 @@ footer {
     border-radius: 8px;
     font: inherit;
 }
+
+/* Favorites page: remove button */
+.remove-favorite-btn {
+    border: 1px solid #d64545;
+    background: white;
+    color: #d64545;
+    padding: 9px 14px;
+    border-radius: 25px;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.remove-favorite-btn:hover {
+    background: #fdeeee;
+}
+
+.remove-favorite-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Details page: favorite button */
+.favorite-toggle {
+    margin-top: 20px;
+    border: 1px solid #252525;
+    background: white;
+    color: #252525;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.favorite-toggle.active {
+    background: #252525;
+    color: white;
+}
+
+.favorites-section {
+    padding-top: 50px;
+}
