@@ -1,6 +1,6 @@
 """Business layer: discovery rules (FR-03, FR-04, FR-05)."""
 from datetime import datetime
-from zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from db import events as events_db
 from db.connection import connection
@@ -8,7 +8,11 @@ from services.errors import ServiceError
 
 MAX_SEARCH_LENGTH = 200
 MAX_CATEGORIES = 20
-EASTERN = ZoneInfo("America/New_York")   # the single event time zone (Q04)
+try:
+    EASTERN = ZoneInfo("America/New_York")   # the single event time zone (Q04)
+except ZoneInfoNotFoundError:
+    # Windows has no system time-zone data; the tzdata package supplies it.
+    raise SystemExit("Time zone data missing. Run: pip install -r requirements.txt")
 
 
 def now_eastern():
