@@ -48,12 +48,24 @@ function renderEvent(event, notice = "", noticeIsError = false) {
     detailsContainer.replaceChildren();
 
     const image = document.createElement("img");
-    image.className = "details-image";
-    image.src = event.categoryImage;
-    image.alt = `${event.category} event`;
-    // A broken image must not stop the rest of the page from showing
-    image.addEventListener("error", () => image.remove());
-    detailsContainer.appendChild(image);
+image.className = "details-image";
+
+const eventImages = {
+    "Louisville Art Walk": "/images/events/louisville-art-walk.jpg",
+    "Saturday Fitness Meetup": "/images/events/fitness-meetup.jpg",
+    "Introduction to Data Science": "/images/events/data-science.jpg",
+    "Community Volunteer Day": "/images/events/volunteer-day.jpg",
+    "Louisville Food Festival": "/images/events/food-festival.jpg",
+    "Board Game Social Night": "/images/events/board-game-night.jpg"
+};
+
+image.src = eventImages[event.title] || event.categoryImage;
+image.alt = `${event.title} event`;
+
+// A broken image must not stop the rest of the page from showing
+image.addEventListener("error", () => image.remove());
+
+detailsContainer.appendChild(image);
 
     addText(detailsContainer, "p", event.category, "event-category");
     addText(detailsContainer, "h1", event.title);
