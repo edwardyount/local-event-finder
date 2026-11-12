@@ -4,16 +4,6 @@
 // Main Application Logic
 // ======================================
 
-// Save favorite event IDs in the browser
-function getFavorites() {
-    return JSON.parse(localStorage.getItem("favoriteEvents") || "[]");
-}
-
-function saveFavorites(favorites) {
-    localStorage.setItem("favoriteEvents", JSON.stringify(favorites));
-}
-
-
 // Determine whether an event is upcoming using Eastern Time
 function isUpcoming(event) {
     const parts = new Intl.DateTimeFormat("en-CA", {
@@ -68,14 +58,14 @@ function createEventCard(event) {
     const card = document.createElement("article");
     card.className = "event-card";
 
-    const favorites = getFavorites();
-    const isFavorite = favorites.includes(event.id);
+    // Favorites now live on the server (the API sends isFavorite)
+    const isFavorite = Boolean(event.isFavorite);
 
     const image = document.createElement("div");
     image.className = "event-image";
 
     const img = document.createElement("img");
-    img.src = getCategoryImage(event.category);
+    img.src = event.categoryImage;
     img.alt = `${event.category} event`;
     img.loading = "lazy";
 
@@ -121,9 +111,19 @@ function createEventCard(event) {
         isFavorite ? "Remove from favorites" : "Add to favorites"
     );
 
-    favoriteButton.addEventListener("click", () => {
-        toggleFavorite(event.id);
-        renderEvents();
+    favoriteButton.addEventListener("click", async () => {
+        const result = await setFavorite(event.id, !event.isFavorite);
+
+        if (result === "login") {
+            window.location.href = "/pages/login.html";   // must be signed in
+        } else if (result === "ok") {
+            event.isFavorite = !event.isFavorite;
+            document.getElementById("filterMessage").textContent = "";
+            renderEvents();
+        } else {
+            document.getElementById("filterMessage").textContent =
+                "Could not update favorites. Please try again.";
+        }
     });
 
     actions.appendChild(detailsLink);
@@ -143,53 +143,92 @@ function createEventCard(event) {
 }
 
 
-// Add or remove an event from favorites
-function toggleFavorite(eventId) {
-
-    let favorites = getFavorites();
-
-    if (favorites.includes(eventId)) {
-        favorites = favorites.filter(id => id !== eventId);
-    } else {
-        favorites.push(eventId);
-    }
-
-    saveFavorites(favorites);
-}
+// Events currently shown (the server does the searching and filtering)
+let currentEvents = [];
+let requestCounter = 0;
 
 
-// Display events on the homepage
+// Draw the events we already have (no network call)
 function renderEvents() {
 
     const eventGrid = document.getElementById("eventGrid");
     const eventCount = document.getElementById("eventCount");
     const emptyMessage = document.getElementById("emptyMessage");
+    const errorMessage = document.getElementById("errorMessage");
 
     if (!eventGrid) return;
 
-    const searchInput = document.getElementById("searchInput");
-
-    const searchTerm = searchInput ? searchInput.value : "";
-
-    // Show upcoming events only
-    const upcomingEvents = events.filter(isUpcoming);
-
-    // Apply search and category filters
-    const filteredEvents = getFilteredEvents(
-        upcomingEvents,
-        searchTerm
-    );
-
     eventGrid.replaceChildren();
 
-    filteredEvents.forEach(event => {
+    currentEvents.forEach(event => {
         eventGrid.appendChild(createEventCard(event));
     });
 
-    eventCount.textContent =
-        `${filteredEvents.length} events found`;
+    const failed = !errorMessage.hidden;
 
-    emptyMessage.hidden = filteredEvents.length !== 0;
+    eventCount.textContent = failed ? "" : `${currentEvents.length} events found`;
+    emptyMessage.hidden = failed || currentEvents.length !== 0;
+}
+
+
+// Build /api/events query string from the search box, categories and dates
+function buildQuery() {
+    const params = new URLSearchParams();
+
+    const term = document.getElementById("searchInput").value.trim();
+    if (term) params.set("q", term);
+
+    selectedCategories.forEach(category => params.append("categories", category));
+
+    const startDate = document.getElementById("startDate").value;
+    const endDate = document.getElementById("endDate").value;
+    if (startDate) params.set("startDate", startDate);
+    if (endDate) params.set("endDate", endDate);
+
+    return params.toString();
+}
+
+
+// Ask the server for events, then draw them
+async function loadEvents() {
+
+    const myRequest = ++requestCounter;
+    const errorMessage = document.getElementById("errorMessage");
+    const filterMessage = document.getElementById("filterMessage");
+
+    filterMessage.textContent = "";
+
+    try {
+        const { ok, status, data } = await apiFetch("/api/events?" + buildQuery());
+
+        if (myRequest !== requestCounter) return;   // a newer search already started
+
+        if (status === 400 && data && data.error) {
+            // Invalid dates: show the message and keep the last valid results
+            filterMessage.textContent = data.error;
+            return;
+        }
+        if (!ok) throw new Error("Bad response");
+
+        errorMessage.hidden = true;
+        currentEvents = data.events;
+        renderEvents();
+
+    } catch (error) {
+        if (myRequest !== requestCounter) return;
+        // Retry message, never a false "no events found"
+        errorMessage.hidden = false;
+        renderEvents();
+    }
+}
+
+
+function debounce(fn, delay) {
+    let timer;
+    return () => {
+        clearTimeout(timer);
+        timer = setTimeout(fn, delay);
+    };
 }
 
 
@@ -199,20 +238,25 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchInput = document.getElementById("searchInput");
     const searchButton = document.getElementById("searchButton");
 
-    // Search as the user types
-    searchInput.addEventListener("input", renderEvents);
+    // Search as the user types (waits 250 ms after the last key)
+    searchInput.addEventListener("input", debounce(loadEvents, 250));
 
     // Search button
-    searchButton.addEventListener("click", renderEvents);
+    searchButton.addEventListener("click", loadEvents);
+
+    // Date range
+    document.getElementById("startDate").addEventListener("change", loadEvents);
+    document.getElementById("endDate").addEventListener("change", loadEvents);
+
+    // Retry after a failed load
+    document.getElementById("retryButton").addEventListener("click", loadEvents);
 
     // Category selection
     document.querySelectorAll(".category-btn").forEach(button => {
 
         button.addEventListener("click", () => {
 
-            const category = button.dataset.category;
-
-            toggleCategory(category);
+            toggleCategory(button.dataset.category);
 
             button.classList.toggle("active");
 
@@ -221,12 +265,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 button.classList.contains("active")
             );
 
-            renderEvents();
+            loadEvents();
         });
 
     });
 
     // Initial event display
-    renderEvents();
+    loadEvents();
 
 });

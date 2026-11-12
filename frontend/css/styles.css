@@ -113,7 +113,6 @@ body {
     flex: 1;
     min-width: 0;
     border: none;
-    outline: none;
     padding: 14px 20px;
     font-size: 14px;
     background: transparent;
@@ -453,4 +452,232 @@ footer {
 .auth-switch a {
     color: #d97762;
     font-weight: 600;
+}
+
+/* Date filters (home page) */
+.date-filters {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+}
+
+.date-filters input {
+    padding: 8px 10px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+    font: inherit;
+}
+
+/* Favorites page: remove button */
+.remove-favorite-btn {
+    border: 1px solid #d64545;
+    background: white;
+    color: #d64545;
+    padding: 9px 14px;
+    border-radius: 25px;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.remove-favorite-btn:hover {
+    background: #fdeeee;
+}
+
+.remove-favorite-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Details page: favorite button */
+.favorite-toggle {
+    margin-top: 20px;
+    border: 1px solid #252525;
+    background: white;
+    color: #252525;
+    padding: 10px 20px;
+    border-radius: 25px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.favorite-toggle.active {
+    background: #252525;
+    color: white;
+}
+
+.favorites-section {
+    padding-top: 50px;
+}
+
+/* Messages under forms and actions */
+.form-message {
+    margin-top: 14px;
+    font-size: 14px;
+    color: #b3412f;
+}
+
+.form-message.success {
+    color: #2f7d4f;
+}
+
+.form-hint {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #777;
+}
+
+.field-error {
+    margin: 6px 0 0;
+    font-size: 13px;
+    color: #b3412f;
+}
+
+.field-error:empty {
+    display: none;
+}
+
+/* Create / Edit event form */
+.form-card {
+    max-width: 560px;
+}
+
+.auth-card select,
+.auth-card textarea {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    background: white;
+}
+
+.auth-card input[aria-invalid="true"],
+.auth-card select[aria-invalid="true"],
+.auth-card textarea[aria-invalid="true"] {
+    border-color: #b3412f;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.auth-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* Details page: RSVP / favorite / edit buttons */
+.details-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.details-actions .favorite-toggle {
+    margin-top: 0;
+}
+
+.rsvp-btn {
+    border: none;
+    background: #d97762;
+    color: white;
+    padding: 11px 24px;
+    border-radius: 25px;
+    font: inherit;
+    cursor: pointer;
+}
+
+.rsvp-btn:disabled {
+    background: #cfcac2;
+    color: #4a4a4a;
+    cursor: default;
+}
+
+.rsvp-btn.going:disabled {
+    background: #dff1e5;
+    color: #2f7d4f;
+}
+
+/* My RSVPs table */
+.table-wrap {
+    overflow-x: auto;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.05);
+}
+
+.rsvp-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.rsvp-table th,
+.rsvp-table td {
+    padding: 16px 18px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+}
+
+.rsvp-table th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #777;
+}
+
+.rsvp-table tr:last-child td {
+    border-bottom: none;
+}
+
+.rsvp-table a {
+    font-weight: 600;
+    color: #252525;
+}
+
+.cell-sub {
+    display: block;
+    margin-top: 4px;
+    color: #777;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    background: #eee;
+}
+
+.status-pill.upcoming { background: #e7f1fb; color: #1f5f99; }
+.status-pill.confirmed { background: #dff1e5; color: #2f7d4f; }
+.status-pill.cancelled { background: #fdeeee; color: #b3412f; }
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.search-container:focus-within {
+    outline: 3px solid #252525;
+    outline-offset: 2px;
+}
+
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+    outline: 3px solid #252525;
+    outline-offset: 2px;
 }

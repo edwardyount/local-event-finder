@@ -17,6 +17,7 @@
             <a href="index.html">Explore</a>
             <a href="pages/favorites.html">Favorites</a>
             <a href="pages/rsvps.html">My RSVPs</a>
+            <a href="pages/create-event.html">Create Event</a>
             <a href="pages/login.html" class="login-btn">Log In</a>
         </nav>
     </header>
@@ -34,6 +35,7 @@
             </p>
 
             <div class="search-container">
+                <label for="searchInput" class="visually-hidden">Search events</label>
                 <input
                     type="text"
                     id="searchInput"
@@ -41,6 +43,14 @@
                 >
                 <button id="searchButton">Search</button>
             </div>
+
+            <div class="date-filters">
+                <label for="startDate">From</label>
+                <input type="date" id="startDate">
+                <label for="endDate">To</label>
+                <input type="date" id="endDate">
+            </div>
+            <p id="filterMessage" class="form-message" role="status"></p>
         </section>
 
         <section class="categories">
@@ -70,6 +80,11 @@
             <p id="emptyMessage" class="empty-message" hidden>
                 No events found. Try another search or category.
             </p>
+
+            <p id="errorMessage" class="empty-message" role="alert" hidden>
+                Could not load events.
+                <button type="button" id="retryButton">Retry</button>
+            </p>
         </section>
 
     </main>
@@ -78,8 +93,10 @@
         <p>Local Event Finder | Discover more. Experience more.</p>
     </footer>
 
-    <script src="js/events.js"></script>
     <script src="js/filters.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/nav.js"></script>
+    <script src="js/favorites.js"></script>
     <script src="js/app.js"></script>
 
 </body>
