@@ -17,12 +17,12 @@ const categories = [
 
 // Fixed image for each event category
 const categoryImages = {
-    "Arts and Culture": "/images/events/louisville-art-walk.jpg",
-    "Sports and Fitness": "/images/events/fitness-meetup.jpg",
-    "Education": "/images/events/data-science.jpg",
-    "Community and Volunteering": "/images/events/volunteer-day.jpg",
-    "Food and Drink": "/images/events/food-festival.jpg",
-    "Social and Recreation": "/images/events/board-game-night.jpg"
+    "Arts and Culture": "/images/categories/louisville-art-walk.jpg",
+    "Sports and Fitness": "/images/categories/fitness-meetup.jpg",
+    "Education": "/images/categories/data-science.jpg",
+    "Community and Volunteering": "/images/categories/volunteer-day.jpg",
+    "Food and Drink": "/images/categories/food-festival.jpg",
+    "Social and Recreation": "/images/categories/board-game-night.jpg"
 };
 
 
