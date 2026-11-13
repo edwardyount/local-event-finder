@@ -66,27 +66,21 @@ function createEventCard(event) {
 
     const img = document.createElement("img");
 
-const eventImages = {
-    "Louisville Art Walk": "/images/events/louisville-art-walk.jpg",
-    "Saturday Fitness Meetup": "/images/events/fitness-meetup.jpg",
-    "Introduction to Data Science": "/images/events/data-science.jpg",
-    "Community Volunteer Day": "/images/events/volunteer-day.jpg",
-    "Louisville Food Festival": "/images/events/food-festival.jpg",
-    "Board Game Social Night": "/images/events/board-game-night.jpg"
-};
 
-img.src = eventImages[event.title] || event.categoryImage;
-img.alt = `${event.title} event`;
+
+img.src = event.categoryImage;
+img.alt = `${event.title}, ${event.category} event`;
 img.loading = "lazy";
+
 
 img.onerror = () => {
     img.onerror = null;
     img.src = event.categoryImage;
 };
 
+
 image.appendChild(img);
 
-    image.appendChild(img);
 
     const content = document.createElement("div");
     content.className = "event-content";

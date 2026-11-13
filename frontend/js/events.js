@@ -14,26 +14,17 @@ const categories = [
     "Social and Recreation"
 ];
 
+
 // Fixed image for each event category
 const categoryImages = {
-    "Arts and Culture":
-        "https://images.unsplash.com/photo-1531058020387-3be344556be6?w=800",
-
-    "Sports and Fitness":
-        "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800",
-
-    "Education":
-        "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=800",
-
-    "Community and Volunteering":
-        "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800",
-
-    "Food and Drink":
-        "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800",
-
-    "Social and Recreation":
-        "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800"
+    "Arts and Culture": "/images/events/louisville-art-walk.jpg",
+    "Sports and Fitness": "/images/events/fitness-meetup.jpg",
+    "Education": "/images/events/data-science.jpg",
+    "Community and Volunteering": "/images/events/volunteer-day.jpg",
+    "Food and Drink": "/images/events/food-festival.jpg",
+    "Social and Recreation": "/images/events/board-game-night.jpg"
 };
+
 
 // Temporary demonstration events
 const events = [
