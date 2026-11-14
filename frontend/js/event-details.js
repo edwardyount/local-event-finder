@@ -51,12 +51,17 @@ function renderEvent(event, notice = "", noticeIsError = false) {
     detailsContainer.replaceChildren();
 
     const image = document.createElement("img");
-    image.className = "details-image";
-    image.src = event.categoryImage;
-    image.alt = `${event.category} event`;
-    // A broken image must not stop the rest of the page from showing
-    image.addEventListener("error", () => image.remove());
-    detailsContainer.appendChild(image);
+image.className = "details-image";
+
+
+
+image.src = event.categoryImage;
+image.alt = `${event.title}, ${event.category} event`;
+
+// A broken image must not stop the rest of the page from showing
+image.addEventListener("error", () => image.remove());
+
+detailsContainer.appendChild(image);
 
     addText(detailsContainer, "p", event.category, "event-category");
     addText(detailsContainer, "h1", event.title);
