@@ -6,6 +6,9 @@
 const detailsContainer = document.getElementById("eventDetails");
 const eventId = new URLSearchParams(window.location.search).get("id");
 
+// FR-06.1: the details page shows the current status of every event (issue #5)
+const STATUS_LABELS = { upcoming: "Upcoming", started: "Started", cancelled: "Cancelled" };
+
 
 function formatEventDate(dateString) {
     const date = new Date(dateString + "T12:00:00Z");
@@ -68,6 +71,7 @@ function renderEvent(event, notice = "", noticeIsError = false) {
 
     const info = document.createElement("div");
     info.className = "details-information";
+    addInfoRow(info, "Status:", STATUS_LABELS[event.status] || event.status);
     addInfoRow(info, "Date:", formatEventDate(event.date));
     addInfoRow(info, "Time:", `${formatEventTime(event.startTime)} – ${formatEventTime(event.endTime)}`);
     addInfoRow(info, "Location:", event.location);
