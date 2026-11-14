@@ -65,11 +65,22 @@ function createEventCard(event) {
     image.className = "event-image";
 
     const img = document.createElement("img");
-    img.src = event.categoryImage;
-    img.alt = `${event.category} event`;
-    img.loading = "lazy";
 
-    image.appendChild(img);
+
+
+img.src = event.categoryImage;
+img.alt = `${event.title}, ${event.category} event`;
+img.loading = "lazy";
+
+
+img.onerror = () => {
+    img.onerror = null;
+    img.src = event.categoryImage;
+};
+
+
+image.appendChild(img);
+
 
     const content = document.createElement("div");
     content.className = "event-content";
